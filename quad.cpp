@@ -1,6 +1,4 @@
-//TODO * split solve eq to linear and quad
-// 		 * create input func
-//		 * create macros
+#include "quad.h"
  
 #include <stdio.h>
 #include <math.h>
@@ -8,38 +6,38 @@
 #include <assert.h>
 #include <limits.h>
 
-#define FLT_EPSILON 1.19209290E-07F // decimal constant 
+//--------------------------------------------------------------------------------------------------------
+
+int Is_Zero(const double num) {
+
+	if (fabs(num) <= Flt_Epsilon) {
+		return 1;
+	}
+	else {
+		return 0;
+	}
+
+}
 
 //--------------------------------------------------------------------------------------------------------
 
-enum {
-	NO_SOLUTIONS = 0,  // Return code for no solutions case
-	ONE_SOLUTION = 1,  // Return code for one solution case
-	TWO_SOLUTIONS = 2, // Return code for two solutions case
-	ERR_NULL_PTR = -1, // Error code -1 - argument pointer is NULL
-	ERR_NAN_ARG = -2,  // Error code -2 - argument variable is not a number
-	ERR_INF_ARG = -3,	 // Error code -3 - argument variable is infinite
-	ERR_INV_INP = -4,	 // Error code -4 - invalid input
-	ERR_READ_LINE = -5 // Error code -5 - unable to read input line
-};
-
 void print_errnum(const int errnum) {
 	switch (errnum) {
-		case -1:
+		case ERR_NULL_PTR:
 			puts("Error code -1 - argument pointer is NULL");
 			break;
 
-		case -2:
-			puts("Error code -2 - argument variable is not a number");
+		case ERR_NAN_INF_ARG:
+			puts("Error code -2 - argument variable is not a number or infinity");
 			break;
 
-		case -3:
+		case ERR_INF_ARG:
 			puts("Error code -3 - argument variable is infinity");
 			break;
-		case -4:
+		case ERR_INV_INP:
 			puts("Error code -4 - invalid input");
 			break;
-		case -5:
+		case ERR_READ_LINE:
 			puts("Error code -5 - unable to read input line");
 			break;
 		default:
@@ -54,14 +52,12 @@ void print_errnum(const int errnum) {
 
 int get_input(double* a, double* b, double* c) {
 	char line[20];
-	if (a == NULL || b == NULL || c == NULL) {
-		return ERR_NULL_PTR;
-	}
+
+	RET_ASSERT(a == NULL || b == NULL || c == NULL, ERR_NULL_PTR);
 
 	while (1) {
-		if (fgets(line, sizeof(line), stdin) == NULL) {
-			return ERR_READ_LINE;
-		}
+		RET_ASSERT(fgets(line, sizeof(line), stdin) == NULL, ERR_READ_LINE);
+
 		if (sscanf(line, " %lf %lf %lf", a, b, c) == 3) {
 			return 3;
 		} 
@@ -74,8 +70,8 @@ int get_input(double* a, double* b, double* c) {
 //--------------------------------------------------------------------------------------------------------
 
 int solve_linear(const double b, const double c, double* x) {
-	if (fabs(b) <= FLT_EPSILON) {
-		if (fabs(c) <= FLT_EPSILON) {
+	if (Is_Zero(b)) {
+		if (Is_Zero(c)) {
 			return INT_MAX;
 		} 
 		else {
@@ -84,7 +80,7 @@ int solve_linear(const double b, const double c, double* x) {
 
 	}
 	else {
-		if (fabs(c) <= FLT_EPSILON) {
+		if (Is_Zero(c)) {
 			*x = 0;
 		} 
 		else {
@@ -99,8 +95,8 @@ int solve_linear(const double b, const double c, double* x) {
 
 int solve_quad(const double a, const double b, const double c, double* x_1, double* x_2) {
 
-	if (fabs(b) <= FLT_EPSILON) {
-		if (fabs(c) <= FLT_EPSILON) {
+	if (Is_Zero(b)) {
+		if (Is_Zero(c)) {
 			*x_1 = 0;
 			return ONE_SOLUTION;
 		}
@@ -116,19 +112,19 @@ int solve_quad(const double a, const double b, const double c, double* x_1, doub
 		}
 	}
 	else {
-		if (fabs(c) <= FLT_EPSILON) {
+		if (Is_Zero(c)) {
 			*x_1 = 0;
 			*x_2 = -b / a;
 			return TWO_SOLUTIONS;
 		}
 		else {
-			double Determinant = b * b - 4 * a * c;
-			if (Determinant > 0) {
-				*x_1 = (-b + sqrt(Determinant))/(2 * a);
-				*x_2 = (-b - sqrt(Determinant))/(2 * a);
+			double Desc = b * b - 4 * a * c;
+			if (Desc > 0) {
+				*x_1 = (-b + sqrt(Desc))/(2 * a);
+				*x_2 = (-b - sqrt(Desc))/(2 * a);
 				return TWO_SOLUTIONS;
 			}
-			else if (fabs(Determinant) <= FLT_EPSILON) {
+			else if (Is_Zero(Desc)) {
 				*x_1 = -b / (2 * a);
 				return ONE_SOLUTION;
 			}
@@ -144,17 +140,10 @@ int solve_quad(const double a, const double b, const double c, double* x_1, doub
 
 int solve_eq(const double a, const double b, const double c, double* x_1, double* x_2) {
 
-	if (x_1 == NULL || x_2 == NULL) {
-		return ERR_NULL_PTR;
-	}
-	else if (isnan(a) || isnan(b) || isnan(c)) {
-		return ERR_NAN_ARG;
-	}
-	else if (isinf(a) || isinf(b) || isinf(c)) {
-		return ERR_INF_ARG;
-	}
+	//RET_ASSERT(x_1 == NULL || x_2 == NULL, ERR_NULL_PTR);
+	//RET_ASSERT(!(isfinite(a) && isfinite(b) && isfinite(c)), ERR_NAN_INF_ARG);
 
-	if (fabs(a) <= FLT_EPSILON) {
+	if (Is_Zero(a)) {
 		return solve_linear(b, c, x_1);
 	} 
 	else {
@@ -166,15 +155,15 @@ int solve_eq(const double a, const double b, const double c, double* x_1, double
 
 void print_solutions(const int solve_quad_return_code, const double x_1, const double x_2) {
 	switch (solve_quad_return_code) {
-		case 0:
+		case NO_SOLUTIONS:
 			puts("No solutions!");
 			break;
 
-		case 1:
+		case ONE_SOLUTION:
 			printf("x = %.2lf\n", x_1);
 			break;
 
-		case 2:
+		case TWO_SOLUTIONS:
 			printf("x_1 = %.2lf; x_2 = %.2lf\n", x_1, x_2);
 			break;
 
@@ -184,6 +173,7 @@ void print_solutions(const int solve_quad_return_code, const double x_1, const d
 			
 		default:
 			print_errnum(solve_quad_return_code);
+			break;
 	}
 
 	return;
@@ -191,16 +181,3 @@ void print_solutions(const int solve_quad_return_code, const double x_1, const d
 
 //--------------------------------------------------------------------------------------------------------
 
-int main(void){
-	double a, b, c, x_1, x_2;
-	int solve_quad_return_code, ret_val;
-
-	ret_val = get_input(&a, &b, &c);
-	if (ret_val != 3) {
-		print_errnum(ret_val);
-	}
-	solve_quad_return_code = solve_quad(a, b, c, &x_1, &x_2);
-	print_solutions(solve_quad_return_code, x_1, x_2);
-	
-	return 0;
-}
