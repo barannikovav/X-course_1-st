@@ -46,10 +46,10 @@ int main(int argc, char *argv[]){
   printf("%d\n", tests_number); 
 
   for (int i = 0; i < tests_number; i++) {
-    
+
     int n, m = 0;
     int num_roots = 0;
-    double a, b, c, x_1, x_2, tx_1, tx_2 =  0.0/0.0;
+    double a, b, c, x_1, x_2, tx_1, tx_2 =  NaN;
 
     if ((n = get_test_input(&a, &b, &c, &tx_1, &tx_2, &num_roots, fp)) >= 0) {
 

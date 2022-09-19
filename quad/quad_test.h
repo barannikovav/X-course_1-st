@@ -4,6 +4,7 @@
 #include <stdio.h>
 
 //const int BUFSIZ = 4096;
+const double NaN = 0.0/0.0;
 
 enum quad_test_error_codes{
 	ERR_ARG_NUM = -6,   // Error code -1 - wrong number of function arguments
