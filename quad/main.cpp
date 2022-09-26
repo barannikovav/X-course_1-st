@@ -1,7 +1,8 @@
 #include "quad.h"
+#include "math.h"
 
 int main(void){
-	double a, b, c, x_1, x_2 = 0.0/0.0;
+	double a, b, c, x_1, x_2 = NAN;
 	int solve_quad_return_code, ret_val = 0;
 
 	ret_val = get_input(&a, &b, &c);

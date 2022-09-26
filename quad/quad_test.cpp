@@ -27,7 +27,7 @@ int Is_Equal(const double num_1, const double num_2) {
 
 int get_test_input(double* a, double* b, double* c, double* x_1, double* x_2, int* num_roots, FILE* fp) {
 	char line[50];
-	double a_l, b_l, c_l, x_1_l, x_2_l = NaN; // defining local copies for middle tests
+	double a_l, b_l, c_l, x_1_l, x_2_l = NAN; // defining local copies for middle tests
 	int n = 0;
 
 	RET_ASSERT(a == NULL || b == NULL || c == NULL || x_1 == NULL || x_2 == NULL || num_roots == NULL, ERR_NULL_PTR);
