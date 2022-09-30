@@ -14,6 +14,8 @@ enum error_codes {
     ERR_CREATE_LINES = -6,  // Error code -6 - can't create array of lines
     ERR_COUNT_SYM = -7,     // Error code -7 - can't count symbol appearances
     ERR_SORT_TEXT = -8,    // Error code -8 - can't sort text
+    ERR_PRINT_LINE = -9,  // Error code -9 - can't print  line
+    ERROR_TEXT_FWRITE = -10, // Error code -10 - can't write text to file
 };
 
 #endif

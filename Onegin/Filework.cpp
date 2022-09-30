@@ -32,7 +32,7 @@ size_t fread_all(FILE *file_ptr, char **buffer, size_t *buf_size) {
     if ((*buffer = (char *)calloc(flen + 1, sizeof(char))) == NULL) {
         return ERR_ALL_MEM;
     } 
-    puts("22");
+
     while (read_num < flen) {
         ret_code = fread(*buffer, sizeof(char), flen, file_ptr);
         if (ret_code) { /* fread success */
@@ -47,5 +47,13 @@ size_t fread_all(FILE *file_ptr, char **buffer, size_t *buf_size) {
     }
 
     return read_num;
+}
+
+size_t fwrite_all(FILE *file_ptr, char **buffer, size_t *buf_size) {
+   size_t ret_code = 0;
+   
+   RET_ASSERT(buf_size == nullptr, ERR_NULL_PTR_ARG);
+
+   return fwrite(*buffer, sizeof(char), *buf_size, file_ptr);
 }
 
